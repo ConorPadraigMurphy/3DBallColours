@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<style>
+		body {
+			margin: 0;
+		}
+	</style>
+</head>
+
+<body>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.js"></script>
+	<script>
+		//Screne creating
+		const scene = new THREE.Scene();
+
+		//Camera creation
+		const camera = new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight, 0.1, 1000);
+		const helper = new THREE.CameraHelper(camera);
+		camera.position.z = 25;
+		camera.position.y = 10;
+		scene.add(helper);
+
+		//Sphere creation
+		const geometry = new THREE.SphereGeometry(1, 32, 16);
+		const material = new THREE.MeshLambertMaterial({ color: ("Red"), wireframe: false });
+		const sphere = new THREE.Mesh(geometry, material);
+		sphere.castShadow = true;
+		sphere.position.y = -4;
+		scene.add(sphere);
+
+		//Sphere Wireframe creation
+		var geo = new THREE.WireframeGeometry(geometry);
+		var mat = new THREE.LineBasicMaterial({ color: ("White") });
+		var wireframe = new THREE.LineSegments(geo, mat);
+		sphere.add(wireframe);
+
+		// Add transparent box
+		bgeometry = new THREE.BoxGeometry(10, 10, 10);
+		let boxmaterial = new THREE.MeshLambertMaterial({ color: ("White"), transparent: true, opacity: 0.5 });
+		let box = new THREE.Mesh(bgeometry, boxmaterial);
+		box.receiveShadow = true;
+		scene.add(box);
+
+		// Add AmbientLight
+		var light = new THREE.AmbientLight({ color: ("White") });
+		light.intensity = 0.25;
+		scene.add(light);
+
+		//Spotlight Creation
+		var spotLight = new THREE.SpotLight({ color: ("White") });
+		spotLight.position.set(10, 10, 0);
+		spotLight.castShadow = true;
+		scene.add(spotLight)
+
+		//Plane Creation
+		const pgeometry = new THREE.PlaneGeometry(10, 10);
+		const pmaterial = new THREE.MeshLambertMaterial({ color: ("Green"), wireframe: false });
+		const plane = new THREE.Mesh(pgeometry, pmaterial);
+		plane.rotation.x = -Math.PI / 2;
+		plane.position.y = -5;
+
+		//Plane Wireframe Creation
+		var pgeo = new THREE.WireframeGeometry(pgeometry);
+		var pmat = new THREE.LineBasicMaterial({ color: ("White") });
+		var pwireframe = new THREE.LineSegments(pgeo, pmat);
+		pwireframe.rotation.x = -Math.PI / 2;
+		pwireframe.position.y = -5;
+		scene.add(plane, pwireframe);
+
+
+
+		//Renderer creation
+		const renderer = new THREE.WebGLRenderer();
+		renderer.setSize(window.innerWidth, window.innerHeight);
+		renderer.shadowMap.enabled = true;
+		renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+		// Add renderer to dom
+		document.body.appendChild(renderer.domElement);
+
+		//Hue values
+		let hue = 0;
+		let phue = 0;
+
+		let vx = -6;
+		let vy = -5;
+		let vz = -12;
+		let dir = -1;
+
+
+		function animate() {
+
+			requestAnimationFrame(animate);
+
+			sphere.rotation.x += 0.01;
+			sphere.rotation.y += 0.01;
+
+			material.color.setHSL(hue, 1, .5)
+			pmaterial.color.setHSL(phue, 1, .5)
+			hue += 0.001
+			phue += -0.001
+			renderer.render(scene, camera);
+
+			if (sphere.position.x > 3.75 || sphere.position.x < -3.75) {
+				dir *= -1;
+			}
+
+			material.color.setHSL(hue, 1, .5)
+			hue += 0.001
+
+			sphere.position.x += dir * .01;
+			vy -= 0.12
+
+		}
+
+
+		requestAnimationFrame(animate);
+	</script>
+</body>
+
+</html>
